@@ -1,25 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <link href="assets/css/style.css" rel="stylesheet">
-  <title>Calendar</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2023 Calendar with Planning</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: center;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .highlight {
+            background-color: #a0d3ff;
+        }
+
+        input {
+            width: 90%;
+        }
+    </style>
 </head>
 <body>
 <div class="calendar">
 
-  <div class="col leftCol">
-    <div class="content">
-      <h1 class="date">Saturday<span>December 9th</span></h1>
+<h2>2023 Calendar with Planning</h2>
 
-      <div class="notes">
-        <p>
-          <input type="text" value="" placeholder="new note" />
-          <a href="#" title="Add note" class="addNote animate">+</a>
-        </p>
-        <ul class="noteList">
-          <li>Hackaton 5.0<a href="#" title="Remove note" class="removeNote animate">x</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
+<div id="calendarContainer"></div>
 
   <div class="col rightCol">
     <div class="content">
@@ -50,19 +65,81 @@
       </ul>
       <div class="clearfix"></div>
       <ul class="days">
-        <script>
-          for (var _i = 1; _i <= 31; _i += 1) {
-            var _addClass = '';
-            if (_i === 9) {
-              _addClass = ' class="selected"';
+<script>
+    function createCalendar(year) {
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+        const calendarContainer = document.getElementById("calendarContainer");
+
+        // Clear previous calendar
+        calendarContainer.innerHTML = '';
+
+        // Create a calendar for each month
+        months.forEach(month, index) => {
+            const table = document.createElement("table");
+
+            // Create header row
+            const headerRow = table.insertRow();
+            const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+            for (let day of daysOfWeek) {
+                const th = document.createElement("th");
+                th.textContent = day;
+                headerRow.appendChild(th);
             }
-            switch (_i) {
-              case 8:
-              case 10:
-              case 27:
-                _addClass = ' class="event"';
-                break;
+
+            // Get the first day of the month
+            const firstDayOfMonth = new Date(year, index, 1).getDay();
+
+            // Get the last day of the month
+            const lastDayOfMonth = new Date(year, index + 1, 0).getDate();
+
+            // Create calendar days
+            let currentDay = 1;
+            for (let i = 0; i < 6; i++) {
+                const row = table.insertRow();
+
+                for (let j = 0; j < 7; j++) {
+                    const cell = row.insertCell();
+
+                    if ((i === 0 && j < firstDayOfMonth) || currentDay > lastDayOfMonth) {
+                        // Add empty cells before the first day of the month and after the last day
+                        cell.textContent = '';
+                    } else {
+                        const dayContainer = document.createElement("div");
+                        dayContainer.textContent = currentDay;
+
+                        // Highlight the current day
+                        if (currentDay === new Date().getDate() && index === new Date().getMonth()) {
+                            dayContainer.classList.add('highlight');
+                        }
+
+                        // Add an input field for planning
+                        const input = document.createElement("input");
+                        input.type = "text";
+                        input.placeholder = "Plan for the day";
+                        input.id = plan_${year}_${index + 1}_${currentDay};
+
+                        // Retrieve stored plan from localStorage if available
+                        const storedPlan = localStorage.getItem(plan_${year}_${index + 1}_${currentDay});
+                        if (storedPlan) {
+                            input.value = storedPlan;
+                        }
+
+                        input.addEventListener("input", function () {
+                            // Save plan to localStorage on input change
+                            localStorage.setItem(plan_${year}_${index + 1}_${currentDay}, input.value);
+                        });
+
+                        dayContainer.appendChild(input);
+                        cell.appendChild(dayContainer);
+
+                        currentDay++;
+                    }
             }
+            }
+            document.write('<li><a href="#" title="' + _i + '" data-value="' + _i + '"' + _addClass + '>' + _i + '</a></li>');
+                }
             document.write('<li><a href="#" title="' + _i + '" data-value="' + _i + '"' + _addClass + '>' + _i + '</a></li>');
           }
         </script>
@@ -71,8 +148,21 @@
     </div>
   </div>
 
-  <div class="clearfix"></div>
+        </script>
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+  </div>
 
-</div>
+            calendarContainer.appendChild(document.createElement("br"));
+            calendarContainer.appendChild(document.createElement("br"));
+            calendarContainer.appendChild(document.createElement("h3")).textContent = ${month} ${year};
+            calendarContainer.appendChild(table);
+
+    // Example: Display calendar for the year 2023
+    const year2023 = 2023;
+    createCalendar(year2023);
+</script>
 
 </body>
+</html>
