@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timetable Scheduler</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    button {
+      padding: 5px 10px;
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Timetable Scheduler</h2>
+
+  <table id="timetable">
+    <thead>
+      <tr>
+        <th></th>
+        <th colspan="6">Weekdays</th>
+      </tr>
+      <tr>
+        <th>Time</th>
+        <th>Monday</th>
+        <th>Tuesday</th>
+        <th>Wednesday</th>
+        <th>Thursday</th>
+        <th>Friday</th>
+        <th>Saturday</th>
+      </tr>
+    </thead>
+    <tbody id="timetableBody">
+      <!-- This section will be populated dynamically -->
+    </tbody>
+  </table>
+
+  <div>
+    <label for="subjects">Subjects (Separate by commas):</label>
+    <input type="text" id="subjects">
+    <button onclick="generateTimetable()">Generate Timetable</button>
+  </div>
+
+  <script>
+    function generateTimetable() {
+      var subjectsInput = document.getElementById("subjects");
+      var subjects = subjectsInput.value.split(",").map(function(item) {
+        return item.trim();
+      });
+
+      if (subjects.length !== 6) {
+        alert("Please enter exactly 6 subjects separated by commas.");
+        return;
+      }
+
+      var timetableBody = document.getElementById("timetableBody");
+      timetableBody.innerHTML = ""; // Clear the existing timetable
+
+      var timeSlots = [
+        "9:15-10:15", "10:15-11:15", "11:15 (Break)",
+        "11:25-15:25", "12:25-1:25", "1:25 (Lunch Break)",
+        "2:00-3:00", "3:00-400"
+      ];
+
+      for (var i = 0; i < timeSlots.length; i++) {
+        var row = timetableBody.insertRow(-1);
+        var cell1 = row.insertCell(0);
+        cell1.innerHTML = timeSlots[i];
+
+        for (var j = 1; j <= 6; j++) {
+          var cell = row.insertCell(j);
+
+          if (timeSlots[i].includes("Break") || timeSlots[i].includes("Lunch")) {
+            cell.innerHTML = "-";
+          } else {
+            var dayIndex = Math.floor(i / 3); // Dividing time slots into days
+            if (i >= 6) {
+              // Adjust the subject index after the lunch break
+              dayIndex -= 2; // Skip the lunch break day and the afternoon slots of that day
+            }
+            var timeSlotIndex = i % 3; // Index within a day (morning, mid-morning, afternoon)
+            var subjectIndex = (dayIndex * 3) + timeSlotIndex; // Calculate subject index for each time slot
+            cell.innerHTML = subjects[subjectIndex];
+          }
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>
