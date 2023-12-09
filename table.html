@@ -74,10 +74,12 @@
       timetableBody.innerHTML = ""; // Clear the existing timetable
 
       var timeSlots = [
-        "9:15-10:15", "10:15-11:15", "11:15 (Break)",
-        "11:25-15:25", "12:25-1:25", "1:25 (Lunch Break)",
-        "2:00-3:00", "3:00-400"
+        "9:15", "10:15", "11:15 (Break)",
+        "11:25", "12:25", "1:25 (Lunch Break)",
+        "2:00", "3:00"
       ];
+
+      var shuffledSubjects = shuffleSubjects(subjects);
 
       for (var i = 0; i < timeSlots.length; i++) {
         var row = timetableBody.insertRow(-1);
@@ -90,17 +92,36 @@
           if (timeSlots[i].includes("Break") || timeSlots[i].includes("Lunch")) {
             cell.innerHTML = "-";
           } else {
-            var dayIndex = Math.floor(i / 3); // Dividing time slots into days
-            if (i >= 6) {
-              // Adjust the subject index after the lunch break
-              dayIndex -= 2; // Skip the lunch break day and the afternoon slots of that day
-            }
+            var dayIndex = j - 1; // Weekday index (Monday = 0, Tuesday = 1, ...)
             var timeSlotIndex = i % 3; // Index within a day (morning, mid-morning, afternoon)
+
             var subjectIndex = (dayIndex * 3) + timeSlotIndex; // Calculate subject index for each time slot
-            cell.innerHTML = subjects[subjectIndex];
+            var subject = shuffledSubjects[dayIndex].splice(0, 1)[0]; // Remove and get the first subject
+
+            cell.innerHTML = subject;
           }
         }
       }
+    }
+
+    function shuffleSubjects(subjects) {
+      var shuffled = [];
+      for (var i = 0; i < 6; i++) {
+        var shuffledDay = subjects.slice(); // Create a copy of subjects for each day
+        shuffledDay = shuffleArray(shuffledDay); // Shuffle the subjects for the day
+        shuffled.push(shuffledDay); // Add shuffled subjects for the day to the result array
+      }
+      return shuffled;
+    }
+
+    function shuffleArray(array) {
+      for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+      }
+      return array;
     }
   </script>
 
